@@ -153,7 +153,7 @@ public class GetTeam {
                 jsonDetailPlayers.put("link_profile", linkProfile);             //ลิ้งก์โปรไฟล์
 
                 String name = ele.attr("title");  
-                jsonDetailPlayers.put("name", name);                            //ชื่อนักเตะ    
+                jsonDetailPlayers.put("player_name", name);                            //ชื่อนักเตะ    
 
                 String number = ele.select(".number_hide").text();  
                 jsonDetailPlayers.put("squad_nember", number);                  //เบอร์เสื้อ

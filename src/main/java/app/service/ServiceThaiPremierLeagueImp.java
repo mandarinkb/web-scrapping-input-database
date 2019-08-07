@@ -3,6 +3,7 @@ package app.service;
 import app.dao.Redis;
 import app.function.DateTimes;
 import app.function.Elasticsearch;
+import app.function.Md5;
 import app.function.OtherFunc;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +32,9 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
 
     @Autowired
     private OtherFunc func;
+    
+    @Autowired
+    private Md5 md5;
 
     @Autowired
     private Redis rd;
@@ -197,6 +201,13 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                 if (!home.isEmpty()) {
                                     homeAway = func.getHomeAway(home, away);
                                     daymatchesInter = dateTimes.getInterDate(daymatches);
+                                    String homeAwayId = null;
+                                    try{
+                                        homeAwayId = md5.encrypt(home+away);
+                                    }catch(Exception e){
+                                        System.out.println(e.getMessage());
+                                    }
+                                    json.put("home_away_id", homeAwayId);
                                     json.put("link", url);                                 //ลิ้งก์
                                     json.put("season", season);                            //ฤดูกาล
                                     json.put("date", daymatchesInter);                     //วันที่

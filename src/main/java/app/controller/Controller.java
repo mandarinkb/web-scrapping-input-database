@@ -85,20 +85,20 @@ public class Controller {
                 season = json.getString("season");
                 baseLogoLink = json.getString("base_logo_link");
                 if ("results_thaipremierleague".equals(type)) {
-                    String detail = json.getString("detail");
-                    if ("present_results".equals(detail)) {
-                        serviceThaiPremierLeague.resultsPresentContent(link, type, season, baseLogoLink);      //ผลการแข่งขันไทยลีก (ปัจจุบัน)
-                    } else {
+    //                String detail = json.getString("detail");
+    //                if ("present_results".equals(detail)) {
+    //                    serviceThaiPremierLeague.resultsPresentContent(link, type, season, baseLogoLink);      //ผลการแข่งขันไทยลีก (ปัจจุบัน)
+    //                } else {
                         serviceThaiPremierLeague.resultsContent(link, type, season, baseLogoLink);             //ผลการแข่งขันไทยลีก 
-                    }
+    //                }
                 }
                 if ("results_premierleague".equals(type)) {
-                    String detail = json.getString("detail");
-                    if ("present_results".equals(detail)) {
-                        servicePremierLeague.resultsPresentContent(link, type, season, baseLogoLink);       //ผลการแข่งขันพรีเมียร์ลีก อังกฤษ (ปัจจุบัน)
-                    } else {
+    //                String detail = json.getString("detail");
+    //                if ("present_results".equals(detail)) {
+    //                    servicePremierLeague.resultsPresentContent(link, type, season, baseLogoLink);       //ผลการแข่งขันพรีเมียร์ลีก อังกฤษ (ปัจจุบัน)
+    //                } else {
                         servicePremierLeague.resultsContent(link, type, season, baseLogoLink);              //ผลการแข่งขันพรีเมียร์ลีก อังกฤษ 
-                    }
+    //               }
                 }
                 if ("fixtures_thaipremierleague".equals(type)) {    
                     serviceThaiPremierLeague.fixturesContent(link, type, season, baseLogoLink);                //ตารางแข่งขันฟุตบอลไทยลีก

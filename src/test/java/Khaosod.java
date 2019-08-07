@@ -1,4 +1,4 @@
-
+import java.util.regex.*;
 import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -12,6 +12,15 @@ public class Khaosod {
     //public static String nextUrl = "";
     public static String nextUrl = "";
 
+    public int countMatchSrring(String inputString, String regex) {
+        Pattern pattern = Pattern.compile(regex);  //"(.*)" + regex + "(.*)"
+        Matcher matcher = pattern.matcher(inputString);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
+    }
     public static String content(String url) throws IOException {
         Document docContent = Jsoup.connect(url).timeout(60 * 1000).get();/////////////////////////
         String str = docContent.getElementsByClass("td-post-content").outerHtml();
@@ -56,8 +65,9 @@ public class Khaosod {
 
             Element img = ele.select("img").first();
             String imgUrl = img.attr("src");
-            String titleUrl = img.attr("title");
-
+            String titleUrl = img.attr("title");  //หุ้นไทย
+            
+           
             Element date = ele.select("time").first();
             String dateUrl = date.attr("datetime");
 
@@ -66,6 +76,11 @@ public class Khaosod {
             String strUrl = eleUrl.attr("href");
 
             String con =Khaosod.content(strUrl);
+            System.out.println(con.matches("(.*)ความเคลื่อนไหว(.*)"));
+            if(con.matches("(.*)ความเคลื่อนไหว(.*)")){
+                int count = countMatchSrring(con, "ความเคลื่อนไหว");
+                System.out.println("match string : " + count);
+            }
             System.out.println("title : " + titleUrl);
             System.out.println("link : " + strUrl);
             System.out.println("img_link :" + imgUrl);
@@ -87,7 +102,7 @@ public class Khaosod {
             Element title = ele.select("a").first();
             String strUrl = title.attr("href");
             String titleUrl = title.attr("title");
-
+            
             Element img = ele.select("img").first();
             String strImg = img.attr("src");
 
@@ -95,6 +110,12 @@ public class Khaosod {
             String strDate = date.attr("datetime");
 
             String con = Khaosod.content(strUrl);
+            System.out.println(con.matches("(.*)ความเคลื่อนไหว(.*)"));
+            if(con.matches("(.*)ความเคลื่อนไหว(.*)")){
+                int count = countMatchSrring(con, "ความเคลื่อนไหว");
+                System.out.println("match string : " + count);
+            }
+
             System.out.println("title : " + titleUrl);
             System.out.println("link : " + strUrl);
             System.out.println("img_link :" + strImg);
@@ -116,6 +137,8 @@ public class Khaosod {
             String strUrl = title.attr("href");
             String titleUrl = title.attr("title");
 
+            
+            
             Element img = ele.select("img").first();
             String strImg = img.attr("src");
 
@@ -123,6 +146,12 @@ public class Khaosod {
             String strDate = date.attr("datetime");
 
             String con = Khaosod.content(strUrl);
+            System.out.println(con.matches("(.*)ความเคลื่อนไหว(.*)"));            
+            if(con.matches("(.*)ความเคลื่อนไหว(.*)")){
+                int count = countMatchSrring(con, "ความเคลื่อนไหว");
+                System.out.println("match string : " + count);
+            }            
+
             System.out.println("title : " + titleUrl);
             System.out.println("link : " + strUrl);
             System.out.println("img_link :" + strImg);
@@ -135,6 +164,9 @@ public class Khaosod {
         System.out.println("+++++++++++++++ "+ countPage +" +++++++++++++++++++");
     }
 
+    
+    
+    
     public void nextPage() throws IOException, InterruptedException {
         String nextPage = nextUrl;
         boolean check = true;
@@ -209,7 +241,7 @@ public class Khaosod {
         String url = "https://www.khaosod.co.th/stock-monitor";
         Khaosod a = new Khaosod();
         a.firstPage(url);
-        a.nextPage();
+        //a.nextPage();
 
     } 
 }

@@ -14,4 +14,9 @@ public interface ServicePremierLeague {
     public void statistics(String url, String indexName ,String season, String baseLinkImg);  //รวมสถิติต่างๆพรีเมียร์ลีก อังกฤษ
     public void getStaffTeamDetail(String link, String url);     //ข้อมูลผู้จัดการทีม
     public void listTeamPremierLeague(String url, String indexName, String season, String detail ,String baseLink);   //รายชื่อนักเตะและผู้จัดการทีมพรีเมียร์ลีก 
+
+    //เพิ่มเติม 8-8-2562
+    public void presentTeamPremierLeague(String objRadis);
+    public void presentPlayerPremierLeague(String objRadis);
+    public void presentPlayerDetailPremierLeague(String objRadis);
 }

@@ -1405,4 +1405,336 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
         }
     }
 
+    @Override
+    public void presentTeamPremierLeague(String objRadis) {
+        Jedis redis = rd.connect();
+        JSONObject obj = new JSONObject(objRadis);
+        String url = obj.getString("link");
+        String baseLink = obj.getString("base_logo_link");
+        String season = obj.getString("season");
+        
+        JSONObject json ;
+        String newLink = url.replace("index.php", "");
+        try {
+            Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
+            Elements elements = doc.select(".content.main-content.left-content");
+            //String title = elements.select(".title-page").text();
+            
+            Elements eles = elements.select(".MatchTeamFull");
+            for (Element ele : eles) {
+                json = new JSONObject();
+                json.put("link", url);
+                json.put("season", season);
+                json.put("base_logo_link", baseLink);
+                
+                Elements a = ele.select("a");
+                String strUrl = a.attr("href");
+                String linkPage = newLink + strUrl;
+                json.put("link_team", linkPage);
+
+                Elements logoTeam = ele.select(".MatchLogoDivFull");            //logo
+                Elements img = logoTeam.select("img");
+                String logo = img.attr("src");
+                logo = baseLink + func.getNewLinkImage(logo);
+                json.put("logo_team", logo);
+
+                String team = ele.select(".getCodeTeam").text();
+                json.put("team", team);
+
+                try {
+                    String teamId = md5.encrypt(team);
+                    json.put("team_id", teamId);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                
+                json.put("type", "present_teams_detail_premierleague");     // ประแกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
+                redis.rpush("pages", json.toString());
+                els.inputElasticsearch(json.toString(),"present_teams_premierleague");
+                System.out.println(dateTimes.thaiDateTime() + " : insert present_teams_premierleague complete");   
+            }
+        } catch (IOException | JSONException e) {
+            System.out.print(e.getMessage());
+        }
+        redis.close();
+    }
+
+    @Override
+    public void presentPlayerPremierLeague(String objRadis) {
+        Jedis redis = rd.connect();
+        JSONObject obj = new JSONObject(objRadis);
+        String baseLink = obj.getString("base_logo_link");
+        String teamId = obj.getString("team_id");
+        String team = obj.getString("team");
+        String logoTeam = obj.getString("logo_team");
+        String linkTeam = obj.getString("link_team");
+        String season = obj.getString("season");
+        try {
+            String link = linkTeam.replace("index.php", "");
+            // หา link เพื่อไปยังนักเตะทีมนั้นๆ
+            Document docLink = Jsoup.connect(linkTeam).timeout(60 * 1000).get();
+            Element elements = docLink.select(".read-all-box").first();
+            Elements elesA = elements.select("a");
+            String hrefValue = elesA.attr("href");
+            String newLink = link + hrefValue;
+
+            JSONObject json = new JSONObject();
+            json.put("team_id", teamId);
+            json.put("team", team);
+            json.put("logo_team", logoTeam);
+            
+            json.put("link", linkTeam);
+            json.put("season", season);
+            
+            // หารายชื่อนักเตะ
+            Document doc = Jsoup.connect(newLink).timeout(60 * 1000).get();
+            JSONObject jsonDetailPlayers;
+            JSONArray arrDetailPlayers = new JSONArray();
+            Elements elesDetailPlayer = doc.getElementsByClass("show-table");
+            Element elesTr = elesDetailPlayer.select("tr").first();             //เลือก tr tag แรกสุด
+            elesTr.remove();                                                    //ลบ tr tag แรกสุด
+            Element elesNext = elesDetailPlayer.select("tr").first();           //เลือก tr tag ที่ 2
+            elesNext.remove();                                                  //ลบ tr tag ที่ 2
+
+            Elements eles = elesDetailPlayer.select(".clickable-row");
+            for (Element ele : eles) {
+                jsonDetailPlayers = new JSONObject();
+                jsonDetailPlayers.put("player_team_id", teamId);
+                jsonDetailPlayers.put("player_team", team);
+                jsonDetailPlayers.put("player_logo_team", logoTeam);
+                jsonDetailPlayers.put("season", season);
+                
+                String linkProfile = ele.attr("data-href");
+                linkProfile = baseLink + func.getNewLinkImage(linkProfile);
+                jsonDetailPlayers.put("link_profile", linkProfile);             //ลิ้งก์โปรไฟล์
+
+                String name = ele.attr("title");
+                jsonDetailPlayers.put("player_name", name);                     //ชื่อนักเตะ  
+
+                try {
+                    String nameId = md5.encrypt(name);
+                    jsonDetailPlayers.put("player_name_id", nameId);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                String number = ele.select(".number_hide").text();
+                jsonDetailPlayers.put("squad_nember", number);                  //เบอร์เสื้อ
+
+                Elements elesImgProfile = ele.getElementsByClass("img");        //link image profile
+                if (elesImgProfile.hasClass("img")) {
+                    Elements elesChild = elesImgProfile.select("*");
+                    for (Element eleImgProfile : elesChild) {
+                        if (eleImgProfile.tagName().equals("img")) {
+                            Element eleImg = eleImgProfile.select("img").first();
+                            String img = eleImg.attr("src");
+                            img = baseLink + func.getNewLinkImage(img);
+                            jsonDetailPlayers.put("img_player", img);           //รูปนักเตะ  
+                        }
+                    }
+                }
+                Elements eleNationality = ele.select(".flag-icon");
+                String nationality = eleNationality.attr("title");
+                jsonDetailPlayers.put("player_nationality", nationality);       //สัญชาติ
+
+                String position = ele.getElementsByIndexEquals(3).text();
+                String[] arrPosition = position.split(" ");
+                position = arrPosition[arrPosition.length - 1];                 //แก้บัคโดยเอาตัวสุดท้ายจากการ split
+                jsonDetailPlayers.put("position", position);                    //ตำแหน่ง
+
+                String age = ele.getElementsByIndexEquals(5).text();
+                String[] arrAge = age.split(" ");
+                age = arrAge[arrAge.length - 1];                                //แก้บัคโดยเอาตัวสุดท้ายจากการ split
+                jsonDetailPlayers.put("age", age);                              //อายุ
+                jsonDetailPlayers.put("type", "present_players_detail_premierleague");    //ประแกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
+                
+                arrDetailPlayers.put(jsonDetailPlayers);
+                redis.rpush("pages", jsonDetailPlayers.toString());
+            }
+            json.put("players", arrDetailPlayers);
+            els.inputElasticsearch(json.toString(), "present_teams_detail_premierleague");
+            System.out.println(dateTimes.thaiDateTime() + " : insert present_teams_detail_premierleague complete"); 
+        } catch (IOException | JSONException e) {
+            System.out.println(e.getMessage());
+        } 
+        redis.close();
+    }
+
+    @Override
+    public void presentPlayerDetailPremierLeague(String objRadis) {
+        JSONObject obj = new JSONObject(objRadis);
+        String position = obj.getString("position");
+        String linkProfile = obj.getString("link_profile");
+        String playerTeam = obj.getString("player_team");
+        String playerTeamId = obj.getString("player_team_id");
+        String playerlogoTeam = obj.getString("player_logo_team");
+        String playerNameId = obj.getString("player_name_id");
+        String season = obj.getString("season");
+        
+        JSONObject json = new JSONObject();
+        json.put("team", playerTeam);
+        json.put("team_id", playerTeamId);
+        json.put("logo_team", playerlogoTeam);
+        json.put("player_name_id", playerNameId);
+        json.put("link", linkProfile);
+        json.put("season", season);
+        try {
+            Document docLinkProfile = Jsoup.connect(linkProfile).timeout(60 * 1000).get();
+            Element elesDataPlayer = docLinkProfile.select(".data_played").first();
+            Elements elesFoot = elesDataPlayer.select(".foot");
+            Element eleImgFoot = elesFoot.select("a").first();
+            String imgData = eleImgFoot.attr("href");
+            String[] arrStr = imgData.split("/");
+            String plink = linkProfile + "/" + arrStr[1];
+
+            //performance-detail
+            boolean isGoalKeeper = false;
+            if ("ผู้รักษาประตู".equals(position)) {
+                isGoalKeeper = true;
+            }
+            Document docDataPlayedFull = Jsoup.connect(plink).timeout(60 * 1000).get();
+            Elements elesContentPfmBox= docDataPlayedFull.select(".content.pfm-box");
+            Elements elesUl = elesContentPfmBox.select("ul");
+            
+            Elements elesUlAll = elesUl.select("*");
+            int maxLi = 0;
+            for (Element eleLi: elesUlAll) {  // นับจำนวน tag li ทั้งหมด
+                if (eleLi.tagName().equals("li")) {
+                    maxLi++;
+                }
+            }
+            for (int i = 0; i < maxLi; i++) {
+                String li = elesUl.select("li").get(i).text();
+                String[] arrayLi = li.split(" : ");;
+                String keyJson = func.playerDetailEnKey(arrayLi[0]); 
+                String valueJson = arrayLi[1];
+                json.put(keyJson, valueJson);
+            }
+            
+            Element elesDataPlayedFull = docDataPlayedFull.select(".data_played-full").first();
+            if (elesDataPlayedFull != null) {
+
+                Elements elesContent = elesDataPlayedFull.select(".content");
+
+                int maxContent = 0;
+                for (Element eleDataContent : elesContent) {  // นับจำนวน class content 
+                    if (eleDataContent.hasClass("content")) {
+                        maxContent++;
+                    }
+                }
+                JSONObject jsonPlayedLeagueDetail;
+                JSONArray arrDetailPlayers = new JSONArray();
+                for (int i = 0; i < (maxContent - 1); i++) {  // ไม่เอาค่า class content  สุดท้าย (content - 1)
+                    jsonPlayedLeagueDetail = new JSONObject();
+                    Element eleContent = elesDataPlayedFull.select(".content").get(i);  //index แรกเริ่มจาก 0
+//+++++++++++รอการคำนวน++++++++++
+                    if (isGoalKeeper) {  // กรณีผู้รักษาประตู
+                        String subSeason = eleContent.select(".season").text();            //ฤดูกาล  
+                        String club = eleContent.select(".club").text();                   //ทีมสโมสร
+
+                        json.put("link_performance_detail", plink);
+                        jsonPlayedLeagueDetail.put("season", subSeason);
+                        jsonPlayedLeagueDetail.put("club", club);
+
+                        String competition = eleContent.select(".competition").text();  //รายการแข่งขัน
+                        jsonPlayedLeagueDetail.put("competition", competition);
+
+                        String matches = eleContent.select(".matches.league_club_keeper").text();              //ลงเล่น(แมตซ์)
+                        jsonPlayedLeagueDetail.put("matches", matches);
+
+                        String goals = eleContent.select(".data.league_club_keeper").get(0).text();           //ทำประตู 
+                        jsonPlayedLeagueDetail.put("goals", goals);
+
+                        String own_goals = eleContent.select(".data.league_club_keeper").get(1).text();       //ทำเข้าประตูตนเอง
+                        jsonPlayedLeagueDetail.put("own_goals", own_goals);
+
+                        String substituted_on = eleContent.select(".data.league_club_keeper").get(2).text();  //เปลี่ยนตัวเข้า
+                        jsonPlayedLeagueDetail.put("substituted_on", substituted_on);
+
+                        String substituted_off = eleContent.select(".data.league_club_keeper").get(3).text();  //เปลี่ยนตัวออก
+                        jsonPlayedLeagueDetail.put("substituted_off", substituted_off);
+
+                        String yellow = eleContent.select(".data.league_club_keeper").get(4).text();           //ใบเหลือง
+                        jsonPlayedLeagueDetail.put("yellow_cards", yellow);
+
+                        String yellow_red = eleContent.select(".data.league_club_keeper").get(5).text();      //ใบเหลือง/ใบเเดง
+                        jsonPlayedLeagueDetail.put("yellow_red_cards", yellow_red);
+
+                        String red = eleContent.select(".data.league_club_keeper").get(6).text();             //ใบแดง
+                        jsonPlayedLeagueDetail.put("red_cards", red);
+
+                        String conceded = eleContent.select(".data.league_club_keeper").get(7).text();        //เสียประตู
+                        jsonPlayedLeagueDetail.put("goals_conceded", conceded);
+
+                        String shutout = eleContent.select(".data.league_club_keeper").get(8).text();         //คลีนชีท
+                        jsonPlayedLeagueDetail.put("clean_sheets", shutout);
+
+                        String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
+                        jsonPlayedLeagueDetail.put("minutes_played", time);
+                        
+                        arrDetailPlayers.put(jsonPlayedLeagueDetail);
+
+                    } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
+//+++++++++++รอการคำนวน++++++++++                        
+                        String subSeason = eleContent.select(".season").text();            //ฤดูกาล
+                        String club = eleContent.select(".club").text();                   //ทีมสโมสร
+
+                        json.put("link_performance_detail", plink);
+                 
+                        jsonPlayedLeagueDetail.put("season", subSeason);
+                        jsonPlayedLeagueDetail.put("club", club);
+
+                        String competition = eleContent.select(".competition").text();  //รายการแข่งขัน
+                        jsonPlayedLeagueDetail.put("competition", competition);
+
+                        String matches = eleContent.select(".matches.league_club").text();               //ลงเล่น(แมตซ์)
+                        jsonPlayedLeagueDetail.put("matches", matches);
+
+                        String goals = eleContent.select(".data.league_club").get(0).text();            //ทำประตู
+                        jsonPlayedLeagueDetail.put("goals", goals);
+
+                        String assists = eleContent.select(".data.league_club").get(1).text();          //แอสซิสต์
+                        jsonPlayedLeagueDetail.put("assists", assists);
+
+                        String own_goals = eleContent.select(".data.league_club").get(2).text();        //ทำเข้าประตูตนเอง
+                        jsonPlayedLeagueDetail.put("own_goals", own_goals);
+
+                        String substituted_on = eleContent.select(".data.league_club").get(3).text();   //เปลี่ยนตัวเข้า
+                        jsonPlayedLeagueDetail.put("substituted_on", substituted_on);
+
+                        String substituted_off = eleContent.select(".data.league_club").get(4).text();  //เปลี่ยนตัวออก 
+                        jsonPlayedLeagueDetail.put("substituted_off", substituted_off);
+
+                        String yellow = eleContent.select(".data.league_club").get(5).text();           //ใบเหลือง
+                        jsonPlayedLeagueDetail.put("yellow_cards", yellow);
+
+                        String yellow_red = eleContent.select(".data.league_club").get(6).text();       //ใบเหลือง/ใบเเดง
+                        jsonPlayedLeagueDetail.put("yellow_red_cards", yellow_red);
+
+                        String red = eleContent.select(".data.league_club").get(7).text();              //ใบเเดง
+                        jsonPlayedLeagueDetail.put("red_cards", red);
+
+                        String penalty_goals = eleContent.select(".data.league_club").get(8).text();    //ทำประตู(จุดโทษ)
+                        jsonPlayedLeagueDetail.put("penalty_goals", penalty_goals);
+
+                        String mpg = eleContent.select(".mpg").text();                                  //ค่าเฉลี่ยต่อหนึ่งการทำประตู(นาที)
+                        jsonPlayedLeagueDetail.put("minutes_played_goals", mpg);
+
+                        String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
+                        jsonPlayedLeagueDetail.put("minutes_played", time);
+                        
+                        arrDetailPlayers.put(jsonPlayedLeagueDetail);
+                    }
+                }
+                json.put("performance_detail", arrDetailPlayers);
+            }
+            els.inputElasticsearch(json.toString(), "present_players_detail_premierleague");
+            System.out.println(dateTimes.thaiDateTime() + " : insert present_players_detail_premierleague complete");
+        } catch (IOException | JSONException e) {
+            System.out.println(e.getMessage());
+        }       
+
+        
+    }
+
 }

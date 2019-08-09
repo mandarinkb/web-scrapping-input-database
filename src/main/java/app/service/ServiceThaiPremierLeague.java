@@ -13,4 +13,9 @@ public interface ServiceThaiPremierLeague {
     public void statistics(String url, String indexName ,String season, String baseLinkImg);   //รวมสถิติต่างๆไทยลีก
     public void getStaffTeamDetail(String link, String url);     //ข้อมูลผู้จัดการทีม
     public void listTeamThaiPremierLeague(String url, String indexName, String season, String detail ,String baseLink);   //รายชื่อนักเตะและผู้จัดการทีมไทยลีก 
+    
+    //เพิ่มเติม 8-8-2562
+    public void presentTeamThaiPremierLeague(String objRadis);
+    public void presentPlayerThaiPremierLeague(String objRadis);
+    public void presentPlayerDetailThaiPremierLeague(String objRadis);
 }

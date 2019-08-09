@@ -207,4 +207,27 @@ public class OtherFunc {
         }
         return newTeam;
     } 
+    
+    public String playerDetailEnKey(String inputKey) {
+        String key = "";
+        if ("ชื่อ".equals(inputKey)) {
+            key = "player_name";
+        }
+        if ("วันเกิด".equals(inputKey)) {
+            key = "birthday";
+        }
+        if ("สัญชาติ".equals(inputKey)) {
+            key = "nationality";
+        }
+        if ("ส่วนสูง".equals(inputKey)) {
+            key = "height";
+        }
+        if ("ตำแหน่ง".equals(inputKey)) {
+            key = "position";
+        }
+        if ("อดีตสังกัดทีมชาติ".equals(inputKey)) {
+            key = "former_national_team";
+        }
+        return key;
+    }    
 }

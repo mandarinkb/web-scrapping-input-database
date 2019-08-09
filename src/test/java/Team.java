@@ -42,7 +42,7 @@ public class Team {
             Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
             Elements elements = doc.select(".content.main-content.left-content");
             String title = elements.select(".title-page").text();
-            System.out.println(title);
+            //System.out.println(title);
 
             Elements eles = elements.select(".MatchTeamFull");
             for (Element ele : eles) {
@@ -67,8 +67,10 @@ public class Team {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                redis.rpush("team", json.toString());
-                //inputElasticsearch(json.toString(),"present_teams_premierleague");
+                
+                json.put("type", "present_teams_detail_thaipremierleague");  // ประแกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
+                redis.rpush("pages", json.toString());
+                inputElasticsearch(json.toString(),"new_present_teams_thaipremierleague");
             }
         } catch (IOException | JSONException e) {
             System.out.print(e.getMessage());
@@ -112,6 +114,10 @@ public class Team {
             Elements eles = elesDetailPlayer.select(".clickable-row");
             for (Element ele : eles) {
                 jsonDetailPlayers = new JSONObject();
+                jsonDetailPlayers.put("player_team_id", teamId);
+                jsonDetailPlayers.put("player_team", team);
+                jsonDetailPlayers.put("player_logo_team", logoTeam);
+                
                 String linkProfile = ele.attr("data-href");
                 linkProfile = baseLink + getNewLinkImage(linkProfile);
                 jsonDetailPlayers.put("link_profile", linkProfile);             //ลิ้งก์โปรไฟล์
@@ -154,13 +160,13 @@ public class Team {
                 String[] arrAge = age.split(" ");
                 age = arrAge[arrAge.length - 1];  // แก้บัคโดยเอาตัวสุดท้ายจากการ split
                 jsonDetailPlayers.put("age", age);                              //อายุ
-
+                jsonDetailPlayers.put("type", "present_players_detail_thaipremierleague");    // ประแกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
+                
                 arrDetailPlayers.put(jsonDetailPlayers);
-                redis.rpush("players", jsonDetailPlayers.toString());
+                redis.rpush("pages", jsonDetailPlayers.toString());
             }
             json.put("players", arrDetailPlayers);
-            //inputElasticsearch(json.toString(), "test2");
-            //System.out.println(json.toString());
+            inputElasticsearch(json.toString(), "new_present_teams_detail_thaipremierleague");
         } catch (IOException | JSONException e) {
             e.getMessage();
         }
@@ -168,15 +174,19 @@ public class Team {
 
     public void playerDetail(String rdObj) {
         JSONObject json = new JSONObject();
-        String position = "กองกลาง - ตัวรุก";
-        String plink = rdObj;
-/*        
         JSONObject obj = new JSONObject(rdObj);
         String position = obj.getString("position");
         String linkProfile = obj.getString("link_profile");
-*/        
+        String playerTeam = obj.getString("player_team");
+        String playerTeamId = obj.getString("player_team_id");
+        String playerlogoTeam = obj.getString("player_logo_team");
+        String playerNameId = obj.getString("player_name_id");
+        json.put("team", playerTeam);
+        json.put("team_id", playerTeamId);
+        json.put("logo_team", playerlogoTeam);
+        json.put("player_name_id", playerNameId);
         try {
-/*            
+            
             Document docLinkProfile = Jsoup.connect(linkProfile).timeout(60 * 1000).get();
             Element elesDataPlayer = docLinkProfile.select(".data_played").first();
             Elements elesFoot = elesDataPlayer.select(".foot");
@@ -184,13 +194,12 @@ public class Team {
             String imgData = eleImgFoot.attr("href");
             String[] arrStr = imgData.split("/");
             String plink = linkProfile + "/" + arrStr[1];
-*/
+
             //performance-detail
             boolean isGoalKeeper = false;
             if ("ผู้รักษาประตู".equals(position)) {
                 isGoalKeeper = true;
             }
-            //System.out.println(plink);
             Document docDataPlayedFull = Jsoup.connect(plink).timeout(60 * 1000).get();
             Elements elesContentPfmBox= docDataPlayedFull.select(".content.pfm-box");
             Elements elesUl = elesContentPfmBox.select("ul");
@@ -207,7 +216,6 @@ public class Team {
                 String[] arrayLi = li.split(" : ");;
                 String keyJson = playerDetailEnKey(arrayLi[0]); 
                 String valueJson = arrayLi[1];
-                //System.out.println(keyJson+" : "+valueJson);
                 json.put(keyJson, valueJson);
             }
             
@@ -328,8 +336,7 @@ public class Team {
                 }
                 json.put("performance_detail", arrDetailPlayers);
             }
-            System.out.println(json.toString());
-            inputElasticsearch(json.toString(), "test3");
+            inputElasticsearch(json.toString(), "new_present_players_detail_thaipremierleague");
         } catch (IOException | JSONException e) {
             e.getMessage();
         }
@@ -357,64 +364,7 @@ public class Team {
         }
         return key;
     }
-    
-    public String changeTeamThaiPremierLeague(String season, String team, String club) {
-        String newTeam = team;
-        if ("2019".equals(season)) {
-            if ("ราชบุรี มิตรผล เอฟซี".equals(team)) {
-                newTeam = "ราชบุรี มิตรผล";
-            }
-            if ("สมุทรปราการ ซิตี้ เอฟซี".equals(team)) {
-                newTeam = "สมุทรปราการ ซิตี้";
-            }
-        }
-        if ("2018".equals(season)) {
-            if ("ราชบุรี มิตรผล เอฟซี".equals(team)) {
-                newTeam = "ราชบุรี มิตรผล";
-            }
-        }
-        if ("2017".equals(season)) {
-            if ("โปลิศ เทโร เอฟซี".equals(team)) {
-                newTeam = "บีอีซี เทโรศาสน";
-            }
-            if ("ราชบุรี มิตรผล เอฟซี".equals(team)) {
-                newTeam = "ราชบุรี มิตรผล";
-            }
-            if ("สิงห์ เชียงราย ยูไนเต็ด".equals(team)) {
-                newTeam = "เชียงราย ยูไนเต็ด";
-            }
-            if ("ทรู แบงค็อก ยูไนเต็ด".equals(team)) {
-                newTeam = "แบงค็อก ยูไนเต็ด";
-            }
-            if ("ซุปเปอร์ พาวเวอร์ สมุทรปราการ เอฟซี".equals(team)) {
-                newTeam = "ซุปเปอร์ พาวเวอร์ สมุทรปราการ";
-            }
-            if ("ไทยฮอนด้า ลาดกระบัง เอฟซี".equals(team)) {
-                newTeam = "ไทยฮอนด้า เอฟซี";
-            }
-        }
-        if ("2016".equals(season)) {
-            if ("ทรู แบงค็อก ยูไนเต็ด".equals(team)) {
-                newTeam = "แบงค็อก ยูไนเต็ด";
-            }
-            if ("บีบีซียู เอฟซี".equals(team)) {
-                newTeam = "บีบีซียู";
-            }
-            if ("สิงห์ เชียงราย ยูไนเต็ด".equals(team)) {
-                newTeam = "เชียงราย ยูไนเต็ด";
-            }
-            if ("ซุปเปอร์ พาวเวอร์ สมุทรปราการ เอฟซี".equals(team)) {
-                newTeam = "ซุปเปอร์ พาวเวอร์ สมุทรปราการ";
-            }
-            if ("พัทยา ยูไนเต็ด".equals(team)) {
-                newTeam = "พัทยา เอ็นเอ็นเค ยูไนเต็ด";
-            }
-            if ("ราชบุรี มิตรผล เอฟซี".equals(team)) {
-                newTeam = "ราชบุรี มิตรผล";
-            }
-        }
-        return newTeam;
-    }
+   
 
     public void inputElasticsearch(String body, String index) {
         try {
@@ -440,38 +390,32 @@ public class Team {
     }
 
     public static void main(String[] args) {
-        //String team = "http://www.livesoccer888.com/thaipremierleague/teams/index.php"; //
-/*        String team = "http://www.livesoccer888.com/premierleague/teams/index.php";
+        String team = "http://www.livesoccer888.com/thaipremierleague/teams/index.php"; //
+       //String team = "http://www.livesoccer888.com/premierleague/teams/index.php";
         Team t = new Team();
         t.team(team);
 
         Jedis redis = new Jedis();
         redis.connect();
         boolean flag = true;
-        boolean flag2 = true;
-        String rdObj = null;
+        String rdObj ;
+        JSONObject json ;
+        String type ;
         while (flag) {
-            rdObj = redis.rpop("team");
-            if (rdObj == null) {
-                flag = false;
-            } else {
-                t.player(rdObj);
-            }
-        }
-        while (flag2) {
-            rdObj = redis.rpop("players");
+            rdObj = redis.rpop("pages");
             if (rdObj == null) {
                 return;
             } else {
-                t.playerDetail(rdObj);
+                json = new JSONObject(rdObj);
+                type = json.getString("type");
+                if("present_teams_detail_thaipremierleague".equals(type)){
+                    t.player(rdObj);
+                }
+                if("present_players_detail_thaipremierleague".equals(type)){
+                    t.playerDetail(rdObj);
+                }
             }
-
         }
-*/
-
-        String team = "http://www.livesoccer888.com/thaipremierleague/teams/Trat-FC/Players/Yuki-Bamba/performance-detail";
-        Team t = new Team();
-        t.playerDetail(team);
     }
 
 }

@@ -8,6 +8,7 @@ app\service\ServiceStats.class
 app\service\ServiceThaiPremierLeagueImp.class
 app\service\ServiceThaiPremierLeague.class
 app\function\Elasticsearch.class
+app\function\Md5.class
 app\function\CronExpression.class
 app\service\ServiceStatsImp.class
 app\function\OtherFunc.class

@@ -970,7 +970,13 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
 
                 String team = ele.select(".getCodeTeam").text();
                 json.put("team", team);
-
+                try {
+                    String teamId = md5.encrypt(team);
+                    json.put("team_id", teamId);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                
                 //link ผู้จัดการทีม
                 jsonDetail = new JSONObject();
                 Document docLink = Jsoup.connect(linkPage).timeout(60 * 1000).get();
@@ -1390,8 +1396,8 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                 }
 
                 json.put("players", arrDetailPlayers);
-                els.inputElasticsearch(json.toString(), indexName);
-                System.out.println(dateTimes.thaiDateTime() + " : insert " + indexName + " complete");            
+                els.inputElasticsearch(json.toString(), "part_players_detail_thaipremierleague");
+                System.out.println(dateTimes.thaiDateTime() + " : insert part_players_detail_thaipremierleague complete");            
             }
         } catch (IOException | JSONException e) {
             System.out.println(e.getMessage());
@@ -1564,6 +1570,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
         String playerlogoTeam = obj.getString("player_logo_team");
         String playerNameId = obj.getString("player_name_id");
         String season = obj.getString("season");
+        String imgPlayer = obj.getString("img_player");
         
         JSONObject json = new JSONObject();
         json.put("team", playerTeam);
@@ -1572,6 +1579,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
         json.put("player_name_id", playerNameId);
         json.put("link", linkProfile);
         json.put("season", season);
+        json.put("img_player", imgPlayer);
         try {
             Document docLinkProfile = Jsoup.connect(linkProfile).timeout(60 * 1000).get();
             Element elesDataPlayer = docLinkProfile.select(".data_played").first();
@@ -1579,14 +1587,14 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
             Element eleImgFoot = elesFoot.select("a").first();
             String imgData = eleImgFoot.attr("href");
             String[] arrStr = imgData.split("/");
-            String plink = linkProfile + "/" + arrStr[1];
+            String performanceDetailLink = linkProfile + "/" + arrStr[1];
 
             //performance-detail
             boolean isGoalKeeper = false;
             if ("ผู้รักษาประตู".equals(position)) {
                 isGoalKeeper = true;
             }
-            Document docDataPlayedFull = Jsoup.connect(plink).timeout(60 * 1000).get();
+            Document docDataPlayedFull = Jsoup.connect(performanceDetailLink).timeout(60 * 1000).get();
             Elements elesContentPfmBox= docDataPlayedFull.select(".content.pfm-box");
             Elements elesUl = elesContentPfmBox.select("ul");
             
@@ -1626,7 +1634,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                         String subSeason = eleContent.select(".season").text();            //ฤดูกาล  
                         String club = eleContent.select(".club").text();                   //ทีมสโมสร
 
-                        json.put("link_performance_detail", plink);
+                        json.put("link_performance_detail", performanceDetailLink);
                         jsonPlayedLeagueDetail.put("season", subSeason);
                         jsonPlayedLeagueDetail.put("club", club);
 
@@ -1673,7 +1681,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                         String subSeason = eleContent.select(".season").text();            //ฤดูกาล
                         String club = eleContent.select(".club").text();                   //ทีมสโมสร
 
-                        json.put("link_performance_detail", plink);
+                        json.put("link_performance_detail", performanceDetailLink);
                  
                         jsonPlayedLeagueDetail.put("season", subSeason);
                         jsonPlayedLeagueDetail.put("club", club);

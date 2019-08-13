@@ -5,10 +5,12 @@ ThaiWordbreak.class
 GetFixturesElasticsearch.class
 KhaosodDataObject.class
 SmmSport.class
+TeamApi.class
 StaticTeam.class
 Team.class
 LeagueTable.class
 GetResultsElasticsearch.class
+NewTeamDetail.class
 TestDeleteIndex.class
 GetTeam.class
 TeamDetail.class

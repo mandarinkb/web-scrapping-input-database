@@ -149,20 +149,35 @@ public class Controller {
                     baseLogoLink = json.getString("base_logo_link");
                     servicePremierLeague.statistics(link, type, season, baseLogoLink);                                   //รวมสถิติต่างๆพรีเมียร์ลีก อังกฤษ
                 }
-                /*                
-                if ("teams_thaipremierleague".equals(type)) {
+                  
+                if ("teams_thaipremierleague".equals(type)) { 
+                    link = json.getString("link");
+                    season = json.getString("season");
+                    baseLogoLink = json.getString("base_logo_link");
                     String detail = json.getString("detail");
-                    serviceThaiPremierLeague.listTeamThaiPremierLeague(link, type, season, detail, baseLogoLink);        //list รายชื่อนักเตะและผู้จัดการทีมไทยลีก
+                    if ("present_teams".equals(detail)) {
+                        serviceThaiPremierLeague.presentTeamThaiPremierLeague(objRadis);
+                    } else {
+                        serviceThaiPremierLeague.listTeamThaiPremierLeague(link, type, season, detail, baseLogoLink); //list รายชื่อนักเตะและผู้จัดการทีมไทยลีก
+                    }      
                 }
                 if ("teams_premierleague".equals(type)) {
+                    link = json.getString("link");
+                    season = json.getString("season");
+                    baseLogoLink = json.getString("base_logo_link");
                     String detail = json.getString("detail");
-                    servicePremierLeague.listTeamPremierLeague(link, type, season, detail, baseLogoLink);                //list รายชื่อนักเตะและผู้จัดการทีมพรีเมียร์ลีก 
+                    if ("present_teams".equals(detail)) {
+                        servicePremierLeague.presentTeamPremierLeague(objRadis);
+                    }else{
+                       servicePremierLeague.listTeamPremierLeague(link, type, season, detail, baseLogoLink);  //list รายชื่อนักเตะและผู้จัดการทีมพรีเมียร์ลีก 
+                    }               
                 } 
-                 */
+                
                 //แก้ไข 8-8-2562
-                if ("teams_thaipremierleague".equals(type)) {
+/*                if ("teams_thaipremierleague".equals(type)) {
                     serviceThaiPremierLeague.presentTeamThaiPremierLeague(objRadis);
                 }
+*/
                 if ("present_teams_detail_thaipremierleague".equals(type)) {
                     serviceThaiPremierLeague.presentPlayerThaiPremierLeague(objRadis);
                 }
@@ -171,9 +186,10 @@ public class Controller {
                 }
                 
                 //แก้ไข 8-8-2562
-                if ("teams_premierleague".equals(type)) {
+/*                if ("teams_premierleague".equals(type)) {
                     servicePremierLeague.presentTeamPremierLeague(objRadis);
                 }
+*/
                 if ("present_teams_detail_premierleague".equals(type)) {
                     servicePremierLeague.presentPlayerPremierLeague(objRadis);
                 }

@@ -1679,6 +1679,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
                         String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
                         jsonPlayedLeagueDetail.put("minutes_played", time);
                         
+                        jsonPlayedLeagueDetail.put("average_statistics", 5.56);
                         arrDetailPlayers.put(jsonPlayedLeagueDetail);
 
                     } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
@@ -1730,6 +1731,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
                         String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
                         jsonPlayedLeagueDetail.put("minutes_played", time);
                         
+                        jsonPlayedLeagueDetail.put("average_statistics", 5.56);
                         arrDetailPlayers.put(jsonPlayedLeagueDetail);
                     }
                 }

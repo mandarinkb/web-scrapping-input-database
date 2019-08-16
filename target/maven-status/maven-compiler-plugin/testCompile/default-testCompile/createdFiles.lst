@@ -1,6 +1,8 @@
 StaffTeam.class
+PerformanceDetail.class
 RegexMatchCount.class
 Khaosod.class
+PlayerDetail.class
 ThaiWordbreak.class
 GetFixturesElasticsearch.class
 KhaosodDataObject.class

@@ -1186,9 +1186,8 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                         String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
 
-                                        //arrPlayedLeagueDetail.put(jsonPlayedLeagueDetail);
+                                        jsonPlayedLeagueDetail.put("average_statistics", 8.25);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
-                                        //System.out.println(jsonPlayedLeagueDetail.toString());
                                     }
                                 } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
                                     String subSeason = eleContent.select(".season").text();            //ฤดูกาล
@@ -1240,8 +1239,8 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                         String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
 
+                                        jsonPlayedLeagueDetail.put("average_statistics", 8.25);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
-                                        //System.out.println(jsonPlayedLeagueDetail.toString());
                                     }
                                 }
                             }
@@ -1333,6 +1332,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                             String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
                                             jsonPlayedLeagueDetail.put("minutes_played", time);
 
+                                            jsonPlayedLeagueDetail.put("average_statistics", 8.25);
                                             jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                         }
                                     } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
@@ -1385,6 +1385,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                             String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
                                             jsonPlayedLeagueDetail.put("minutes_played", time);
 
+                                            jsonPlayedLeagueDetail.put("average_statistics", 8.25);
                                             jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                         }
                                     }

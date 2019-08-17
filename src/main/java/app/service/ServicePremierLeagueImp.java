@@ -1194,7 +1194,8 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
 
                                         String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
-
+                                        
+                                        jsonPlayedLeagueDetail.put("average_statistics", 7.12);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                     }
                                 } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
@@ -1247,7 +1248,8 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
 
                                         String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
-
+                                        
+                                        jsonPlayedLeagueDetail.put("average_statistics", 7.12);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                     }
                                 }
@@ -1340,6 +1342,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
                                         String time = eleContent.select(".time").text();                                      //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
 
+                                        jsonPlayedLeagueDetail.put("average_statistics", 7.12);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                     }
                                 } else {  //กรณีนักเตะผู้เล่นตำแหน่งอื่นๆ
@@ -1392,6 +1395,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
                                         String time = eleContent.select(".time").text();                                //ลงเล่น (เวลา:นาที)
                                         jsonPlayedLeagueDetail.put("minutes_played", time);
 
+                                        jsonPlayedLeagueDetail.put("average_statistics", 7.12);
                                         jsonDetail.put("performance_detail", jsonPlayedLeagueDetail);
                                     }
                                 }

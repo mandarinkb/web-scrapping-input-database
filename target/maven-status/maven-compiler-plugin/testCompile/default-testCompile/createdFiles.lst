@@ -7,6 +7,7 @@ ThaiWordbreak.class
 GetFixturesElasticsearch.class
 KhaosodDataObject.class
 SmmSport.class
+PreviewsMatch.class
 TeamApi.class
 StaticTeam.class
 Team.class

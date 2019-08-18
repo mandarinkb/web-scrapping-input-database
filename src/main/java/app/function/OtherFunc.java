@@ -229,5 +229,50 @@ public class OtherFunc {
             key = "former_national_team";
         }
         return key;
-    }    
+    } 
+    
+    public String changeNameScoreAnalyze(String team){
+        if ("ราชบุรี มิตรผล".equals(team)) {
+            team = "ราชบุรี มิตรผล เอฟซี";
+        } else if ("เชียงราย ยูไนเต็ด".equals(team)) {
+            team = "สิงห์ เชียงราย ยูไนเต็ด";
+        } else if ("เอสซีจี เมืองทอง".equals(team)) {
+            team = "เอสซีจี เมืองทอง ยูไนเต็ด";
+        } else if ("แบงค็อก ยูไนเต็ด".equals(team)) {
+            team = "ทรู แบงค็อก ยูไนเต็ด";
+        } else if ("นครราชสีมา เอฟซี".equals(team)) {
+            team = "นครราชสีมา มาสด้า เอฟซี";
+        } else if ("สมุทรปราการ ซิตี้".equals(team)) {
+            team = "สมุทรปราการ ซิตี้ เอฟซี";
+        } else if ("พีที ประจวบ".equals(team)) {
+            team = "พีที ประจวบ เอฟซี";
+        } else if ("แมนฯ ซิตี้".equals(team)) {
+            team = "แมนเชสเตอร์ ซิตี้";
+        } else if ("แมนฯ ยูไนเต็ด".equals(team)) {
+            team = "แมนเชสเตอร์ ยูไนเต็ด";
+        } else if ("นิวคาสเซิล".equals(team)) {
+            team = "นิวคาสเซิล ยูไนเต็ด";
+        } else if ("สเปอร์ส".equals(team)) {
+            team = "ท็อตแน่ม ฮ็อทสเปอร์";
+        } else if ("เวสต์แฮม".equals(team)) {
+            team = "เวสต์แฮม ยูไนเต็ด";
+        } else if ("บอร์นมัธ".equals(team)) {
+            team = "เอเอฟซี บอร์นมัธ";
+        } else if ("ไบรท์ตัน".equals(team)) {
+            team = "ไบรท์ตัน แอนด์ โฮฟ อัลเบียน";
+        } else if ("วูล์ฟแฮมป์ตัน".equals(team)) {
+            team = "วูล์ฟแฮมป์ตัน วันเดอร์เรอร์ส";
+        } else if ("เชฟฯ ยูไนเต็ด".equals(team)) {
+            team = "เชฟฟิลด์ ยูไนเต็ด";
+        }
+        return team;
+    }
+    public String changeMultiNameScoreAnalyze(String homeAway){
+        String[] splitStr = homeAway.split(" - ");
+        String home = splitStr[0];
+        String away = splitStr[1];
+        home = changeNameScoreAnalyze(home);
+        away = changeNameScoreAnalyze(away);
+        return home + " - " + away;
+    }   
 }

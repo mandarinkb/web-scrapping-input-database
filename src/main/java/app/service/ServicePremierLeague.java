@@ -19,4 +19,7 @@ public interface ServicePremierLeague {
     public void presentTeamPremierLeague(String objRadis);
     public void presentPlayerPremierLeague(String objRadis);
     public void presentPlayerDetailPremierLeague(String objRadis);
+    
+    //เพิ่มเติม 18-8-2562
+    public void getContentScoreAnalyzePage(String objRadis);
 }

@@ -6,6 +6,7 @@ import app.function.Elasticsearch;
 import app.function.Md5;
 import app.function.OtherFunc;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -38,7 +39,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
 
     @Autowired
     private Redis rd;
-
+  
     @Override
     public void resultsPresentContent(String url, String indexName, String season, String baseLinkImg) {
         Jedis redis = rd.connect();
@@ -1739,4 +1740,100 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
             System.out.println(e.getMessage());
         }
     }
+
+    @Override
+    public void getContentScoreAnalyzePage(String objRadis) {
+        JSONObject obj = new JSONObject(objRadis);
+        String url = obj.getString("link");
+        String season = obj.getString("season");
+        
+        String baseLink = url.replace("index.php", "");
+        String nextpage;
+        boolean check = true;
+        List<String> listPage = new ArrayList<>();
+        try {
+            // first page get link content
+            Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
+            Elements elements = doc.select(".pre-table._border");
+            Elements elesTr = elements.select("tr");
+            for (Element ele : elesTr) {
+                Elements elesPreviews = ele.select(".pre-views");
+                Elements a = elesPreviews.select("a");
+                String strUrl = a.attr("href");
+                if (!strUrl.isEmpty()) {
+                    String linkContent = baseLink + strUrl;
+                    listPage.add(linkContent);
+                }
+            }
+            Elements elesNextPage = doc.select("#pager_links");
+            Elements elesNext = elesNextPage.select(".next_page");
+            if (elesNext.isEmpty()) {
+                check = false;
+            }
+            Elements a = elesNext.select("a");
+            String pathNextPage = a.attr("href");
+            nextpage = url + pathNextPage;
+
+            // next page get link content
+            while (check) {
+                Document docNextPage = Jsoup.connect(nextpage).timeout(60 * 1000).get();
+                Elements elementsNextPage = docNextPage.select(".pre-table._border");
+                Elements elesTrNextPage = elementsNextPage.select("tr");
+                for (Element ele : elesTrNextPage) {
+                    Elements elesPreviewsNextPage = ele.select(".pre-views");
+                    Elements aNextPage = elesPreviewsNextPage.select("a");
+                    String strUrl = aNextPage.attr("href");
+                    if (!strUrl.isEmpty()) {
+                        String linkContent = baseLink + strUrl;
+                        listPage.add(linkContent);
+                    }
+                }
+                Elements elesNextPage2 = docNextPage.select("#pager_links");
+                Elements elesNext2 = elesNextPage2.select(".next_page");
+                if (elesNext2.isEmpty()) {
+                    check = false;
+                }
+                Elements a2 = elesNext2.select("a");
+                String pathNextPage2 = a2.attr("href");
+                nextpage = url + pathNextPage2;
+            }
+            // get content from list
+            for (String contentlink : listPage) {
+                JSONObject json = new JSONObject();
+                Document docContent = Jsoup.connect(contentlink).timeout(60 * 1000).get();
+                Elements elementsContent = docContent.select(".col-1");
+                String homeAway = elementsContent.select("h1").text();
+                String dateThai = elementsContent.select(".datecontents").text();
+                homeAway = homeAway.replace("วิเคราะห์บอล ไทยลีก คู่ ", "");  // กรณีไทยลีก
+                homeAway = homeAway.replace("วิเคราะห์บอล พรีเมียร์ลีก อังกฤษ คู่ ", "");  // กรณีพรีเมียร์ลีก
+                homeAway = homeAway.replace("VS", "-");
+                homeAway = func.changeMultiNameScoreAnalyze(homeAway);  // เปลี่ยนชื่อให้ตรงกับชื่อทีมที่จัดเก็บ
+
+                dateThai = dateThai.replace("โพสต์เมื่อ : ", "");
+                String date = dateTimes.getInterDate(dateThai);
+                // content
+                Elements elesContent = docContent.select(".col-1._margt");
+                String content = elesContent.select(".txt_preview").text();
+                String scoreAnalyze = elesContent.select(".ScoreAnalyzeList").text();
+
+                json.put("link", contentlink);
+                json.put("season", season);
+                json.put("home_away", homeAway);
+                try {
+                    json.put("home_away_id", md5.encrypt(homeAway));
+                } catch (NoSuchAlgorithmException | JSONException e) {
+                    System.out.println(e.getMessage());
+                }
+                json.put("date_thai", dateThai);
+                json.put("date", date);
+                json.put("content", content);
+                json.put("score_analyze", scoreAnalyze);
+                els.inputElasticsearch(json.toString(), "score_analyze_thaipremierleague");
+                System.out.println(dateTimes.thaiDateTime() + " : insert score_analyze_thaipremierleague complete");
+            }
+        } catch (IOException | JSONException e) {
+            System.out.print(e.getMessage());
+        }
+    }
+
 }

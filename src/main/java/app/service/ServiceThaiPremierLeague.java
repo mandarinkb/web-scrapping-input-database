@@ -18,4 +18,7 @@ public interface ServiceThaiPremierLeague {
     public void presentTeamThaiPremierLeague(String objRadis);
     public void presentPlayerThaiPremierLeague(String objRadis);
     public void presentPlayerDetailThaiPremierLeague(String objRadis);
+    
+    //เพิ่มเติม 18-8-2562
+    public void getContentScoreAnalyzePage(String objRadis);
 }

@@ -9,17 +9,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class PreviewsMatch {
-    //public String firstUrl = "http://www.livesoccer888.com/thaipremierleague/previews/index.php";
-    public String firstUrl = "http://www.livesoccer888.com/premierleague/previews/index.php";
-    public String nextpage;
-    //public String baseLink = "http://www.livesoccer888.com/thaipremierleague/previews/";
-    public String baseLink = "http://www.livesoccer888.com/premierleague/previews/";
-    public boolean check = true;
-    public List<String> listPage = new ArrayList<>();
-    public void getLinkPage(String url) {
-        //String link = url.replace("index.php", "");
-        
+
+    public void getContentScoreAnalyzePage(String url) {
+        String baseLink = url.replace("index.php", "");
+        String nextpage;
+        boolean check = true;
+        List<String> listPage = new ArrayList<>();
         try {
+            // first page get link content
             Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
             Elements elements = doc.select(".pre-table._border");
             Elements elesTr = elements.select("tr");
@@ -28,9 +25,8 @@ public class PreviewsMatch {
                 Elements a = elesPreviews.select("a");
                 String strUrl = a.attr("href");
                 if (!strUrl.isEmpty()) {
-                    String newLink = baseLink + strUrl;
-                    //System.out.println(newLink);
-                    listPage.add(newLink);
+                    String linkContent = baseLink + strUrl;
+                    listPage.add(linkContent);
                 }
             }
             Elements elesNextPage = doc.select("#pager_links");
@@ -40,41 +36,63 @@ public class PreviewsMatch {
             }
             Elements a = elesNext.select("a");
             String pathNextPage = a.attr("href");
+            nextpage = url + pathNextPage;
 
-            nextpage = firstUrl +  pathNextPage;
-            //System.out.println(pathNextPage);
+            // next page get link content
+            while (check) {
+                Document docNextPage = Jsoup.connect(nextpage).timeout(60 * 1000).get();
+                Elements elementsNextPage = docNextPage.select(".pre-table._border");
+                Elements elesTrNextPage = elementsNextPage.select("tr");
+                for (Element ele : elesTrNextPage) {
+                    Elements elesPreviewsNextPage = ele.select(".pre-views");
+                    Elements aNextPage = elesPreviewsNextPage.select("a");
+                    String strUrl = aNextPage.attr("href");
+                    if (!strUrl.isEmpty()) {
+                        String linkContent = baseLink + strUrl;
+                        listPage.add(linkContent);
+                    }
+                }
+                Elements elesNextPage2 = docNextPage.select("#pager_links");
+                Elements elesNext2 = elesNextPage2.select(".next_page");
+                if (elesNext2.isEmpty()) {
+                    check = false;
+                }
+                Elements a2 = elesNext2.select("a");
+                String pathNextPage2 = a2.attr("href");
+                nextpage = url + pathNextPage2;
+            }
+            // get content from list
+            for (String strlink : listPage) {               
+                Document docContent = Jsoup.connect(strlink).timeout(60 * 1000).get();
+                Elements elementsContent = docContent.select(".col-1");
+                String homeAway = elementsContent.select("h1").text();
+                String dateThai = elementsContent.select(".datecontents").text();
+                homeAway = homeAway.replace("วิเคราะห์บอล ไทยลีก คู่ ", "");  // กรณีไทยลีก
+                homeAway = homeAway.replace("วิเคราะห์บอล พรีเมียร์ลีก อังกฤษ คู่ ", "");  // กรณีพรีเมียร์ลีก
+                homeAway = homeAway.replace("VS", "-");
+                homeAway = changeMultiNameScoreAnalyze(homeAway);  // เปลี่ยนชื่อให้ตรงกับชื่อทีมที่จัดเก็บ
+                
+                dateThai = dateThai.replace("โพสต์เมื่อ : ", "");
+                String date = getInterDate(dateThai);
+                // content
+                Elements elesContent = docContent.select(".col-1._margt");
+                String content = elesContent.select(".txt_preview").text();
+                String scoreAnalyze = elesContent.select(".ScoreAnalyzeList").text();
+
+                System.out.println(homeAway);
+                System.out.println(dateThai);
+                System.out.println(date);
+                System.out.println(content);
+                System.out.println(scoreAnalyze);
+                System.out.println("");
+            }
+
         } catch (IOException | JSONException e) {
             System.out.print(e.getMessage());
         }
     }
-    
-    public void getContent(String url) {
-        try {
-            Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
-            Elements elements = doc.select(".col-1");
-            String team = elements.select("h1").text();
-            String thDate = elements.select(".datecontents").text();
-            team = team.replace("วิเคราะห์บอล ไทยลีก คู่ ", "");  // กรณีไทยลีก
-            team = team.replace("วิเคราะห์บอล พรีเมียร์ลีก อังกฤษ คู่ ", "");  // กรณีพรีเมียร์ลีก
-            team = team.replace("VS", "-");
-            thDate = thDate.replace("โพสต์เมื่อ : ", "");
-            String date = getInterDate(thDate);
-            
-            System.out.println(team);
-            System.out.println(thDate);
-            System.out.println(date);
 
-            // content
-            Elements elesContent = doc.select(".col-1._margt");
-            String content = elesContent.select(".txt_preview").text();
-            String scoreAnalyze = elesContent.select(".ScoreAnalyzeList").text();
-            System.out.println(content);
-            System.out.println(scoreAnalyze);
-        } catch (IOException | JSONException e) {
-            System.out.print(e.getMessage());
-        }
-    } 
-     public String getInterDate(String inputDate) {
+    public String getInterDate(String inputDate) {
         String[] splitStr = inputDate.split("\\s+");
         //วันที่ 
         String day = splitStr[1];
@@ -128,19 +146,57 @@ public class PreviewsMatch {
         int y = Integer.parseInt(splitStr[3]) - 543;//แปลงเป็น คศ
         String year = Integer.toString(y);
         return year + "-" + month + "-" + day;
-    }  
+    }
+
+    public String changeNameScoreAnalyze(String team) {
+        if ("ราชบุรี มิตรผล".equals(team)) {
+            team = "ราชบุรี มิตรผล เอฟซี";
+        } else if ("เชียงราย ยูไนเต็ด".equals(team)) {
+            team = "สิงห์ เชียงราย ยูไนเต็ด";
+        } else if ("เอสซีจี เมืองทอง".equals(team)) {
+            team = "เอสซีจี เมืองทอง ยูไนเต็ด";
+        } else if ("แบงค็อก ยูไนเต็ด".equals(team)) {
+            team = "ทรู แบงค็อก ยูไนเต็ด";
+        } else if ("นครราชสีมา เอฟซี".equals(team)) {
+            team = "นครราชสีมา มาสด้า เอฟซี";
+        } else if ("สมุทรปราการ ซิตี้".equals(team)) {
+            team = "สมุทรปราการ ซิตี้ เอฟซี";
+        } else if ("พีที ประจวบ".equals(team)) {
+            team = "พีที ประจวบ เอฟซี";
+        } else if ("แมนฯ ซิตี้".equals(team)) {
+            team = "แมนเชสเตอร์ ซิตี้";
+        } else if ("แมนฯ ยูไนเต็ด".equals(team)) {
+            team = "แมนเชสเตอร์ ยูไนเต็ด";
+        } else if ("นิวคาสเซิล".equals(team)) {
+            team = "นิวคาสเซิล ยูไนเต็ด";
+        } else if ("สเปอร์ส".equals(team)) {
+            team = "ท็อตแน่ม ฮ็อทสเปอร์";
+        } else if ("เวสต์แฮม".equals(team)) {
+            team = "เวสต์แฮม ยูไนเต็ด";
+        } else if ("บอร์นมัธ".equals(team)) {
+            team = "เอเอฟซี บอร์นมัธ";
+        } else if ("ไบรท์ตัน".equals(team)) {
+            team = "ไบรท์ตัน แอนด์ โฮฟ อัลเบียน";
+        } else if ("วูล์ฟแฮมป์ตัน".equals(team)) {
+            team = "วูล์ฟแฮมป์ตัน วันเดอร์เรอร์ส";
+        } else if ("เชฟฯ ยูไนเต็ด".equals(team)) {
+            team = "เชฟฟิลด์ ยูไนเต็ด";
+        }
+        return team;
+    }
+
+    public String changeMultiNameScoreAnalyze(String homeAway) {
+        String[] splitStr = homeAway.split(" - ");
+        String home = splitStr[0];
+        String away = splitStr[1];
+        home = changeNameScoreAnalyze(home);
+        away = changeNameScoreAnalyze(away);
+        return home + " - " + away;
+    }
 
     public static void main(String[] args) {
-        //String str = "http://www.livesoccer888.com/thaipremierleague/previews/read.php?ID=10349"; //http://www.livesoccer888.com/thaipremierleague/previews/read.php?ID=9377
         PreviewsMatch p = new PreviewsMatch();
-        p.getLinkPage(p.firstUrl);
-        while(p.check){
-            p.getLinkPage(p.nextpage); 
-        }
-
-        for(String str : p.listPage){
-            p.getContent(str);
-            System.out.println("");
-        }
+        String url = "http://www.livesoccer888.com/thaipremierleague/previews/index.php";
+        p.getContentScoreAnalyzePage(url);
     }
 }

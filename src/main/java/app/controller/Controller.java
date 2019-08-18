@@ -172,30 +172,39 @@ public class Controller {
                        servicePremierLeague.listTeamPremierLeague(link, type, season, detail, baseLogoLink);  //list รายชื่อนักเตะและผู้จัดการทีมพรีเมียร์ลีก 
                     }               
                 } 
-                
-                //แก้ไข 8-8-2562
-/*                if ("teams_thaipremierleague".equals(type)) {
-                    serviceThaiPremierLeague.presentTeamThaiPremierLeague(objRadis);
-                }
-*/
+
                 if ("present_teams_detail_thaipremierleague".equals(type)) {
                     serviceThaiPremierLeague.presentPlayerThaiPremierLeague(objRadis);
                 }
                 if ("present_players_detail_thaipremierleague".equals(type)) {
                     serviceThaiPremierLeague.presentPlayerDetailThaiPremierLeague(objRadis);
                 }
-                
-                //แก้ไข 8-8-2562
-/*                if ("teams_premierleague".equals(type)) {
-                    servicePremierLeague.presentTeamPremierLeague(objRadis);
-                }
-*/
+
                 if ("present_teams_detail_premierleague".equals(type)) {
                     servicePremierLeague.presentPlayerPremierLeague(objRadis);
                 }
                 if ("present_players_detail_premierleague".equals(type)) {
                     servicePremierLeague.presentPlayerDetailPremierLeague(objRadis);
-                }                
+                } 
+                // 18-08-2562
+                if ("score_analyze_thaipremierleague".equals(type)) {
+                    serviceThaiPremierLeague.getContentScoreAnalyzePage(objRadis);
+                }
+                if ("score_analyze_premierleague".equals(type)) {
+                    servicePremierLeague.getContentScoreAnalyzePage(objRadis);
+                }
+                
+                //แก้ไข 8-8-2562
+/*                if ("teams_thaipremierleague".equals(type)) {
+                    serviceThaiPremierLeague.presentTeamThaiPremierLeague(objRadis);
+                }
+*/                
+                
+                //แก้ไข 8-8-2562
+/*                if ("teams_premierleague".equals(type)) {
+                    servicePremierLeague.presentTeamPremierLeague(objRadis);
+                }
+*/                
             }
         }
         System.out.println(dateTimes.interDateTime() + " : web scrapping input database runTask stop");

@@ -12,6 +12,7 @@ TeamApi.class
 StaticTeam.class
 Team.class
 LeagueTable.class
+DemoTeam.class
 GetResultsElasticsearch.class
 NewTeamDetail.class
 TestDeleteIndex.class

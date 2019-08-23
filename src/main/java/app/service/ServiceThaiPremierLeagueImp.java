@@ -1511,9 +1511,9 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
 
                 String name = ele.attr("title");
                 jsonDetailPlayers.put("player_name", name);                     //ชื่อนักเตะ  
-
+                String nameId = "";
                 try {
-                    String nameId = md5.encrypt(name);
+                    nameId = md5.encrypt(name);
                     jsonDetailPlayers.put("player_name_id", nameId);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -1523,12 +1523,13 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                 jsonDetailPlayers.put("squad_nember", number);                  //เบอร์เสื้อ
 
                 Elements elesImgProfile = ele.getElementsByClass("img");        //link image profile
+                String img = "";
                 if (elesImgProfile.hasClass("img")) {
                     Elements elesChild = elesImgProfile.select("*");
                     for (Element eleImgProfile : elesChild) {
                         if (eleImgProfile.tagName().equals("img")) {
                             Element eleImg = eleImgProfile.select("img").first();
-                            String img = eleImg.attr("src");
+                            img = eleImg.attr("src");
                             img = baseLink + func.getNewLinkImage(img);
                             jsonDetailPlayers.put("img_player", img);           //รูปนักเตะ  
                         }
@@ -1609,7 +1610,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
             }
             for (int i = 0; i < maxLi; i++) {
                 String li = elesUl.select("li").get(i).text();
-                String[] arrayLi = li.split(" : ");;
+                String[] arrayLi = li.split(" : ");
                 String keyJson = func.playerDetailEnKey(arrayLi[0]); 
                 String valueJson = arrayLi[1];
                 json.put(keyJson, valueJson);

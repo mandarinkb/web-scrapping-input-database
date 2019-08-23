@@ -23,7 +23,7 @@ public class OtherFunc {
     }
 
     public String statsOfTeamEnKey(String inputKey) {
-        String key = "";
+        String key = "other";
         if ("จำนวนนักเตะ".equals(inputKey)) {
             key = "players";
         }
@@ -49,7 +49,7 @@ public class OtherFunc {
     }
 
     public String detailPlayerToEnKey(String inputKey) {
-        String key = "";
+        String key = "other";
         if ("วันเกิด".equals(inputKey)) {
             key = "birthday";
         }
@@ -90,7 +90,7 @@ public class OtherFunc {
     }
 
     public String titleToEnKey(String inputKey) {
-        String key = "";
+        String key = "other";
         if ("ทำประตูสุงสุด".equals(inputKey)) {
             key = "goals";
         }
@@ -103,7 +103,7 @@ public class OtherFunc {
         return key;
     }
     public String staffTeamDetailToEnKey(String inputKey) {
-        String key = "";
+        String key = "other";
         if ("ชื่ออังกฤษ".equals(inputKey)) {
             key = "en_name";
         }
@@ -209,7 +209,7 @@ public class OtherFunc {
     } 
     
     public String playerDetailEnKey(String inputKey) {
-        String key = "";
+        String key = "other";
         if ("ชื่อ".equals(inputKey)) {
             key = "player_name";
         }
@@ -227,6 +227,9 @@ public class OtherFunc {
         }
         if ("อดีตสังกัดทีมชาติ".equals(inputKey)) {
             key = "former_national_team";
+        }
+        if ("ปัจจุบันสังกัดทีมชาติ".equals(inputKey)) {
+            key = "currently_national_team";
         }
         return key;
     } 

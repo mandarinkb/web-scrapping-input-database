@@ -12,12 +12,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class App {
     @Autowired
     private CronExpression cron;
-
+   
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
     @Bean
     public String cronExpressionValue() {
         return cron.cronExpressionTask();
-    }
+    }     
 }

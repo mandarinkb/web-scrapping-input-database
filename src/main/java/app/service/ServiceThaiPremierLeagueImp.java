@@ -1616,6 +1616,7 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                 json.put(keyJson, valueJson);
             }
             
+            json.put("link_performance_detail", performanceDetailLink);
             Element elesDataPlayedFull = docDataPlayedFull.select(".data_played-full").first();
             if (elesDataPlayedFull != null) {
 
@@ -1637,7 +1638,6 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                         String subSeason = eleContent.select(".season").text();            //ฤดูกาล  
                         String club = eleContent.select(".club").text();                   //ทีมสโมสร
 
-                        json.put("link_performance_detail", performanceDetailLink);
                         jsonPlayedLeagueDetail.put("season", subSeason);
                         jsonPlayedLeagueDetail.put("club", club);
 
@@ -1685,8 +1685,6 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                         String subSeason = eleContent.select(".season").text();            //ฤดูกาล
                         String club = eleContent.select(".club").text();                   //ทีมสโมสร
 
-                        json.put("link_performance_detail", performanceDetailLink);
-                 
                         jsonPlayedLeagueDetail.put("season", subSeason);
                         jsonPlayedLeagueDetail.put("club", club);
 

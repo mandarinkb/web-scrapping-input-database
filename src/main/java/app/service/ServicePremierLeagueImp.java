@@ -199,8 +199,8 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
 
                                     scoreHome = score.substring(0, score.indexOf('-'));     //ตัดเอาตัวเลขก่อน - (?-)
                                     scoreAway = score.substring(score.lastIndexOf('-') + 1);  //ตัดเอาตัวเลขหลัง - (-?)
-                                }
-                                if (!home.isEmpty()) {
+                                    
+                                    // ทดสอบแก้ไขผลบอลย้อนหลังไม่ตรง 28-08-2562
                                     homeAway = func.getHomeAway(home, away);
                                     daymatchesInter = dateTimes.getInterDate(daymatches);
                                     String homeAwayId = null;
@@ -225,6 +225,8 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
                                     els.inputElasticsearch(json.toString(), indexName);
                                     System.out.println(dateTimes.thaiDateTime() + " : insert results PremierLeague complete");
                                 }
+                                //if (!home.isEmpty()) {
+                                //}
                             }
                         }
                     }

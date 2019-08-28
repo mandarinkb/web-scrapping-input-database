@@ -2,7 +2,6 @@ app\service\ServicePremierLeagueImp.class
 app\App.class
 app\function\Query.class
 app\function\DateTimes.class
-app\controller\RestartController.class
 app\dao\Redis.class
 app\service\ServicePremierLeague.class
 app\service\ServiceStats.class

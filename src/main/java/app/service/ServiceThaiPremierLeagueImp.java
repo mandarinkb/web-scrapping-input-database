@@ -198,8 +198,8 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
 
                                     scoreHome = score.substring(0, score.indexOf('-'));     //ตัดเอาตัวเลขก่อน - (?-)
                                     scoreAway = score.substring(score.lastIndexOf('-') + 1);  //ตัดเอาตัวเลขหลัง - (-?)
-                                }
-                                if (!home.isEmpty()) {
+                                    
+                                    // ทดสอบแก้ไขผลบอลย้อนหลังไม่ตรง 28-08-2562
                                     homeAway = func.getHomeAway(home, away);
                                     daymatchesInter = dateTimes.getInterDate(daymatches);
                                     String homeAwayId = null;
@@ -222,8 +222,10 @@ public class ServiceThaiPremierLeagueImp implements ServiceThaiPremierLeague {
                                     json.put("home_img", baseLinkImg + homeImgUrl);        //โลโก้เจ้าบ้าน
                                     json.put("away_img", baseLinkImg + awayImgUrl);        //โลโก้ทีมเยือน
                                     els.inputElasticsearch(json.toString(), indexName);
-                                    System.out.println(dateTimes.thaiDateTime() + " : insert results ThaiPremierLeague complete");
+                                    System.out.println(dateTimes.thaiDateTime() + " : insert results ThaiPremierLeague complete");  
                                 }
+                                //if (!home.isEmpty()) {
+                                //}
                             }
                         }
                     }

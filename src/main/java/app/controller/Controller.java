@@ -29,7 +29,7 @@ public class Controller {
     @Autowired
     private ServiceThaiPremierLeague serviceThaiPremierLeague;
 
-    @Scheduled(cron = "#{@cronExpressionValue}")
+    @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask() {
         System.out.println(dateTimes.interDateTime() + " : web scrapping input database runTask start");
         Jedis redis = rd.connect();

@@ -4,7 +4,6 @@ D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\controller\C
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\service\ServicePremierLeague.java
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\service\ServiceStats.java
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\function\Query.java
-D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\controller\RestartController.java
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\service\ServiceStatsImp.java
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\function\CronExpression.java
 D:\My projet\new-project\WebScrapingInputDatabase\src\main\java\app\dao\Database.java

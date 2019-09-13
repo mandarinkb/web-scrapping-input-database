@@ -52,7 +52,7 @@ public class Controller {
             type = json.getString("type");
 
             if ("stats".equals(type)) {
-                String linkStats = json.getString("link");
+                String linkStats = json.getString("url");
                 String league = json.getString("league");
                 String typeDetail = json.getString("type_detail");
                 if ("stats_of_team".equals(typeDetail)) {
@@ -70,7 +70,7 @@ public class Controller {
                     }
                 }
             } else if ("staff".equals(type)) {
-                String linkStaff = json.getString("link");
+                String linkStaff = json.getString("url");
                 String index = json.getString("index");
                 if ("staff_thaipremierleague".equals(index)) {
                     serviceThaiPremierLeague.getStaffTeamDetail(linkStaff, objRadis);                      //ข้อมูลผู้จัดการทีมไทยลีก
@@ -80,10 +80,10 @@ public class Controller {
                 }
             } else {
                 if ("results_thaipremierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
-                    //                String detail = json.getString("detail");
+                    baseLogoLink = json.getString("base_url");
+                    //                String detail = json.getString("type_detail");
                     //                if ("present_results".equals(detail)) {
                     //                    serviceThaiPremierLeague.resultsPresentContent(link, type, season, baseLogoLink);      //ผลการแข่งขันไทยลีก (ปัจจุบัน)
                     //                } else {
@@ -91,10 +91,10 @@ public class Controller {
                     //                }
                 }
                 if ("results_premierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
-                    //                String detail = json.getString("detail");
+                    baseLogoLink = json.getString("base_url");
+                    //                String detail = json.getString("type_detail");
                     //                if ("present_results".equals(detail)) {
                     //                    servicePremierLeague.resultsPresentContent(link, type, season, baseLogoLink);       //ผลการแข่งขันพรีเมียร์ลีก อังกฤษ (ปัจจุบัน)
                     //                } else {
@@ -102,21 +102,21 @@ public class Controller {
                     //               }
                 }
                 if ("fixtures_thaipremierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     serviceThaiPremierLeague.fixturesContent(link, type, season, baseLogoLink);                //ตารางแข่งขันฟุตบอลไทยลีก
                 }
                 if ("fixtures_premierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     servicePremierLeague.fixturesContent(link, type, season, baseLogoLink);                 //ตารางแข่งขันฟุตบอลพรีเมียร์ลีก อังกฤษ
                 }
                 if ("league_table_thaipremierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     if ("2014".equals(season)) {
                         serviceThaiPremierLeague.allTableThaiPremierLeague2014Content(link, type, season, baseLogoLink);    //ตารางคะแนนรวมไทยลีก 2014
                     } else {
@@ -126,9 +126,9 @@ public class Controller {
                     }
                 }
                 if ("league_table_premierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     if ("2014-2015".equals(season)) {
                         servicePremierLeague.allTablePremierLeague2014_2015Content(link, type, season, baseLogoLink);    //ตารางคะแนนรวมพรีเมียร์ลีก อังกฤษ 2014-2015
                     } else {
@@ -138,23 +138,23 @@ public class Controller {
                     }
                 }
                 if ("statistics_thaipremierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     serviceThaiPremierLeague.statistics(link, type, season, baseLogoLink);                               //รวมสถิติต่างๆไทยลีก
                 }
                 if ("statistics_premierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
+                    baseLogoLink = json.getString("base_url");
                     servicePremierLeague.statistics(link, type, season, baseLogoLink);                                   //รวมสถิติต่างๆพรีเมียร์ลีก อังกฤษ
                 }
                   
                 if ("teams_thaipremierleague".equals(type)) { 
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
-                    String detail = json.getString("detail");
+                    baseLogoLink = json.getString("base_url");
+                    String detail = json.getString("type_detail");
                     if ("present_teams".equals(detail)) {
                         serviceThaiPremierLeague.presentTeamThaiPremierLeague(objRadis);
                     } else {
@@ -162,10 +162,10 @@ public class Controller {
                     }      
                 }
                 if ("teams_premierleague".equals(type)) {
-                    link = json.getString("link");
+                    link = json.getString("url");
                     season = json.getString("season");
-                    baseLogoLink = json.getString("base_logo_link");
-                    String detail = json.getString("detail");
+                    baseLogoLink = json.getString("base_url");
+                    String detail = json.getString("type_detail");
                     if ("present_teams".equals(detail)) {
                         servicePremierLeague.presentTeamPremierLeague(objRadis);
                     }else{

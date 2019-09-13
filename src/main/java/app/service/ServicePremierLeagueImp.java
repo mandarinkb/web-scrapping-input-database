@@ -1421,11 +1421,12 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
     public void presentTeamPremierLeague(String objRadis) {
         Jedis redis = rd.connect();
         JSONObject obj = new JSONObject(objRadis);
-        String url = obj.getString("link");
-        String baseLink = obj.getString("base_logo_link");
+        String url = obj.getString("url");
+        String baseLink = obj.getString("base_url");
         String season = obj.getString("season");
         
         JSONObject json ;
+        JSONObject jsonPages;
         String newLink = url.replace("index.php", "");
         try {
             Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
@@ -1435,33 +1436,40 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
             Elements eles = elements.select(".MatchTeamFull");
             for (Element ele : eles) {
                 json = new JSONObject();
+                jsonPages = new JSONObject(); // เอาไว้ใช้งานต่อใน redis
                 json.put("link", url);
+                jsonPages.put("url", url);
                 json.put("season", season);
-                json.put("base_logo_link", baseLink);
+                jsonPages.put("season", season);
+                jsonPages.put("base_url", baseLink);
                 
                 Elements a = ele.select("a");
                 String strUrl = a.attr("href");
                 String linkPage = newLink + strUrl;
                 json.put("link_team", linkPage);
+                jsonPages.put("link_team", linkPage);
 
                 Elements logoTeam = ele.select(".MatchLogoDivFull");            //logo
                 Elements img = logoTeam.select("img");
                 String logo = img.attr("src");
                 logo = baseLink + func.getNewLinkImage(logo);
                 json.put("logo_team", logo);
+                jsonPages.put("logo_team", logo);
 
                 String team = ele.select(".getCodeTeam").text();
                 json.put("team", team);
-
+                jsonPages.put("team", team);
                 try {
                     String teamId = md5.encrypt(team);
                     json.put("team_id", teamId);
+                    jsonPages.put("team_id", teamId);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
                 
-                json.put("type", "present_teams_detail_premierleague");     // ประแกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
-                redis.rpush("pages", json.toString());
+                jsonPages.put("type", "present_teams_detail_premierleague");     // ประกาศเพื่อส่งต่อไปยังฟังก็ชันถัดไป
+                
+                redis.rpush("pages", jsonPages.toString());
                 els.inputElasticsearch(json.toString(),"present_teams_premierleague");
                 System.out.println(dateTimes.thaiDateTime() + " : insert present_teams_premierleague complete");   
             }
@@ -1475,7 +1483,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
     public void presentPlayerPremierLeague(String objRadis) {
         Jedis redis = rd.connect();
         JSONObject obj = new JSONObject(objRadis);
-        String baseLink = obj.getString("base_logo_link");
+        String baseLink = obj.getString("base_url");
         String teamId = obj.getString("team_id");
         String team = obj.getString("team");
         String logoTeam = obj.getString("logo_team");
@@ -1753,7 +1761,7 @@ public class ServicePremierLeagueImp implements ServicePremierLeague {
     @Override
     public void getContentScoreAnalyzePage(String objRadis) {
         JSONObject obj = new JSONObject(objRadis);
-        String url = obj.getString("link");
+        String url = obj.getString("url");
         String season = obj.getString("season");
         
         String baseLink = url.replace("index.php", "");
